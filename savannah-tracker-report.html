@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Savannah Tracker Report — AfyaTech</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --amber: #BA7517;
+    --amber-dark: #8A5210;
+    --amber-light: #FAEEDA;
+    --amber-mid: #E8A83A;
+    --teal: #0F6E56;
+    --teal-dark: #094D3C;
+    --teal-light: #E1F5EE;
+    --teal-mid: #5DCAA5;
+    --coral: #993C1D;
+    --coral-light: #FAECE7;
+    --coral-mid: #E07A55;
+    --sand: #F5EFE0;
+    --sand-dark: #E8DFC8;
+    --bark: #3D2B0E;
+    --text: #2C2416;
+    --text-muted: #6B5E48;
+    --white: #FDFAF4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--sand);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse at 10% 20%, rgba(186,117,23,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 80%, rgba(15,110,86,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 40%, rgba(232,168,58,0.04) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── MASTHEAD ── */
+  .masthead {
+    background: linear-gradient(135deg, var(--bark) 0%, #5C3D0F 60%, #2D4A1E 100%);
+    border-radius: 16px;
+    padding: 2.5rem 2.5rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(61,43,14,0.25);
+  }
+
+  .masthead::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,168,58,0.25) 0%, transparent 70%);
+  }
+
+  .masthead::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 30px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(93,202,165,0.15) 0%, transparent 70%);
+  }
+
+  /* Decorative acacia silhouette */
+  .masthead-deco {
+    position: absolute;
+    bottom: 0; right: 2rem;
+    opacity: 0.07;
+    font-size: 120px;
+    line-height: 1;
+    color: #fff;
+    pointer-events: none;
+  }
+
+  .masthead-eyebrow {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber-mid);
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .masthead h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.15;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .masthead-sub {
+    font-size: 13px;
+    color: rgba(253,250,244,0.65);
+    position: relative;
+    z-index: 1;
+    font-style: italic;
+  }
+
+  .masthead-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tag {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(232,168,58,0.4);
+    color: var(--amber-mid);
+    background: rgba(232,168,58,0.1);
+  }
+
+  /* ── INTRO ── */
+  .intro {
+    background: var(--teal-dark);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+    color: rgba(225,245,238,0.9);
+    font-size: 13.5px;
+    line-height: 1.75;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .intro::before {
+    content: '"';
+    position: absolute;
+    top: -10px; left: 16px;
+    font-family: 'Playfair Display', serif;
+    font-size: 120px;
+    color: rgba(93,202,165,0.12);
+    line-height: 1;
+  }
+
+  .intro strong { color: var(--teal-mid); font-weight: 500; }
+
+  /* ── SECTION HEADERS ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 2.5rem 0 1rem;
+  }
+
+  .section-badge {
+    background: var(--amber);
+    color: var(--white);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--bark);
+    font-weight: 700;
+  }
+
+  .section-divider {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--amber-mid), transparent);
+    opacity: 0.4;
+  }
+
+  /* ── PROMPT CARDS ── */
+  .prompt-card {
+    background: var(--white);
+    border-radius: 14px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(61,43,14,0.08);
+    border: 1px solid var(--sand-dark);
+  }
+
+  .card-header {
+    padding: 12px 18px;
+    background: var(--amber-light);
+    border-bottom: 1px solid var(--sand-dark);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .card-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--amber-dark);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .pill {
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+
+  .pill-original { background: var(--coral-light); color: var(--coral); border: 1px solid var(--coral-mid); }
+  .pill-aim { background: var(--teal-light); color: var(--teal-dark); border: 1px solid var(--teal-mid); }
+  .pill-map { background: var(--amber-light); color: var(--amber-dark); border: 1px solid var(--amber-mid); }
+  .pill-cot { background: #EEE8FA; color: #5B3FA0; border: 1px solid #B59CE8; }
+
+  .card-body { padding: 16px 18px; }
+
+  .original-prompt {
+    background: var(--coral-light);
+    border-left: 3px solid var(--coral-mid);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-style: italic;
+    color: var(--coral);
+    margin-bottom: 14px;
+  }
+
+  .original-prompt::before {
+    content: 'Original: ';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: block;
+    margin-bottom: 4px;
+    opacity: 0.7;
+  }
+
+  .rewritten-prompt {
+    background: var(--teal-light);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--teal-dark);
+    line-height: 1.7;
+    margin-bottom: 16px;
+    border: 1px solid rgba(93,202,165,0.3);
+    position: relative;
+  }
+
+  .rewritten-prompt::before {
+    content: 'Rewritten Prompt';
+    display: block;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 8px;
+  }
+
+  /* ── FRAMEWORK GRIDS ── */
+  .framework-grid {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .framework-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+  .fw-cell {
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+
+  .fw-cell-a { background: var(--teal-light); border: 1px solid rgba(93,202,165,0.35); }
+  .fw-cell-i { background: var(--amber-light); border: 1px solid rgba(232,168,58,0.35); }
+  .fw-cell-m { background: var(--coral-light); border: 1px solid rgba(224,122,85,0.35); }
+  .fw-cell-map-m { background: var(--amber-light); border: 1px solid rgba(232,168,58,0.35); }
+  .fw-cell-map-a { background: #EEF4FF; border: 1px solid #AABFE8; }
+  .fw-cell-map-p { background: #F3F0FA; border: 1px solid #C4B8E8; }
+
+  .fw-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 5px;
+  }
+
+  .fw-cell-a .fw-label { color: var(--teal); }
+  .fw-cell-i .fw-label { color: var(--amber-dark); }
+  .fw-cell-m .fw-label { color: var(--coral); }
+  .fw-cell-map-m .fw-label { color: var(--amber-dark); }
+  .fw-cell-map-a .fw-label { color: #2A4A8A; }
+  .fw-cell-map-p .fw-label { color: #5B3FA0; }
+
+  .fw-cell p { font-size: 11.5px; line-height: 1.5; color: var(--text-muted); }
+
+  /* ── TABLE ── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-bottom: 14px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .data-table thead th {
+    background: var(--bark);
+    color: var(--amber-mid);
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .data-table tbody td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--sand-dark);
+    color: var(--text-muted);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  .data-table tbody tr:last-child td { border-bottom: none; }
+  .data-table tbody tr:nth-child(even) td { background: var(--sand); }
+  .data-table tbody td:first-child { font-weight: 500; color: var(--text); }
+
+  /* ── IMPROVEMENT BOX ── */
+  .improvement {
+    background: linear-gradient(135deg, var(--amber-light), #FDF3DC);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12.5px;
+    color: var(--text);
+    border-left: 3px solid var(--amber);
+    line-height: 1.6;
+  }
+
+  .improvement strong { color: var(--amber-dark); font-weight: 600; }
+
+  /* ── QUIZ CARDS ── */
+  .quiz-card {
+    background: var(--white);
+    border-radius: 14px;
+    margin-bottom: 1.25rem;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(61,43,14,0.07);
+    border: 1px solid var(--sand-dark);
+  }
+
+  .quiz-header {
+    padding: 12px 18px;
+    background: linear-gradient(to right, var(--teal-dark), #1A5E48);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .quiz-num {
+    width: 26px; height: 26px;
+    background: var(--teal-mid);
+    border-radius: 50%;
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .quiz-question {
+    font-size: 12px;
+    color: rgba(225,245,238,0.9);
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  .quiz-body {
+    padding: 14px 18px;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .quiz-body strong { color: var(--text); font-weight: 600; }
+  .quiz-body p { margin-bottom: 8px; }
+  .quiz-body p:last-child { margin-bottom: 0; }
+
+  .quiz-body ul {
+    padding-left: 16px;
+    margin: 8px 0;
+  }
+
+  .quiz-body li { margin-bottom: 5px; }
+
+  .ocean-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    margin: 10px 0;
+  }
+
+  .ocean-cell {
+    border-radius: 6px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+
+  .ocean-cell:nth-child(1) { background: var(--teal-light); border: 1px solid rgba(93,202,165,0.3); }
+  .ocean-cell:nth-child(2) { background: var(--amber-light); border: 1px solid rgba(232,168,58,0.3); }
+  .ocean-cell:nth-child(3) { background: var(--coral-light); border: 1px solid rgba(224,122,85,0.3); }
+  .ocean-cell:nth-child(4) { background: #EEF4FF; border: 1px solid #AABFE8; }
+  .ocean-cell:nth-child(5) { background: #F3F0FA; border: 1px solid #C4B8E8; }
+
+  .ocean-letter {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .ocean-cell:nth-child(1) .ocean-letter { color: var(--teal); }
+  .ocean-cell:nth-child(2) .ocean-letter { color: var(--amber-dark); }
+  .ocean-cell:nth-child(3) .ocean-letter { color: var(--coral); }
+  .ocean-cell:nth-child(4) .ocean-letter { color: #2A4A8A; }
+  .ocean-cell:nth-child(5) .ocean-letter { color: #5B3FA0; }
+
+  .ocean-word { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); }
+
+  /* ── REFLECTION ── */
+  .reflection {
+    background: linear-gradient(135deg, var(--teal-dark) 0%, #1A4A38 50%, #2D3A0E 100%);
+    border-radius: 14px;
+    padding: 1.5rem 1.75rem;
+    margin-top: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(9,77,60,0.2);
+  }
+
+  .reflection::after {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 150px; height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,168,58,0.15) 0%, transparent 70%);
+  }
+
+  .reflection h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    color: var(--amber-mid);
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .reflection p {
+    font-size: 13px;
+    color: rgba(225,245,238,0.85);
+    line-height: 1.8;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    margin-top: 2.5rem;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    opacity: 0.7;
+  }
+
+  /* ── INLINE FRAMEWORK TAGS ── */
+  .fw-inline {
+    display: inline-block;
+    background: var(--teal);
+    color: var(--white);
+    font-size: 9px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 3px;
+    vertical-align: middle;
+    margin: 0 2px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── CHECKLIST ── */
+  .cot-steps {
+    counter-reset: steps;
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+  }
+
+  .cot-steps li {
+    counter-increment: steps;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--sand-dark);
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .cot-steps li:last-child { border-bottom: none; }
+
+  .cot-steps li::before {
+    content: counter(steps);
+    background: var(--teal);
+    color: var(--white);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  @media (max-width: 600px) {
+    .framework-grid.cols-3 { grid-template-columns: 1fr; }
+    .ocean-grid { grid-template-columns: repeat(3, 1fr); }
+    .masthead h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="masthead-deco">🌿</div>
+    <div class="masthead-eyebrow">PLP Africa · AI for Development · Prompt Engineering</div>
+    <h1>Savannah Tracker Report</h1>
+    <div class="masthead-sub">AfyaTech Maternal Health AI — Rural Kenya</div>
+    <div class="masthead-tags">
+      <span class="tag">AIM Framework</span>
+      <span class="tag">MAP Framework</span>
+      <span class="tag">Chain-of-Thought</span>
+      <span class="tag">Verifier Pattern</span>
+      <span class="tag">OCEAN Framework</span>
+    </div>
+  </div>
+
+  <!-- INTRODUCTION -->
+  <div class="intro">
+    <strong>Why precision matters in maternal health AI:</strong> In rural Kenya, where 70% of users live more than 5 km from a clinic and CHW schedules are irregular, a vague AI prompt can delay care or trigger panic. Precision-engineered prompts anchor advice in <strong>local food systems, real transport constraints, and community schedules</strong>, turning generic guidelines into life-saving, culturally grounded action.
+  </div>
+
+  <!-- PART A -->
+  <div class="section-header">
+    <div class="section-badge">Part A</div>
+    <div class="section-title">Three Rewritten Prompts</div>
+    <div class="section-divider"></div>
+  </div>
+
+  <!-- PROMPT A -->
+  <div class="prompt-card">
+    <div class="card-header">
+      <span class="card-label">Prompt A — Antenatal Nutrition</span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="pill pill-original">Original</span>
+        <span class="pill pill-aim">AIM</span>
+        <span class="pill pill-map">MAP</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="original-prompt">"What should I eat during pregnancy?"</div>
+      <div class="rewritten-prompt">
+        You are a maternal nutrition advisor trained on Kenyan dietary data. You speak Swahili-influenced English and understand that matooke (plantain) provides approximately 60% of daily calories for many rural families. A pregnant woman in her second trimester asks what to eat. Her budget is under KES 100 per day and she has no refrigeration. Recommend 3 locally available foods rich in iron and folate, explaining why each matters for her baby's development. Do not recommend foods unavailable in Western Kenya such as kale or imported supplements. No medical jargon. Maximum 150 words. End with one practical meal idea using only foods from a local market.
+      </div>
+
+      <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--teal);margin-bottom:8px;">AIM Annotations</p>
+      <div class="framework-grid cols-3" style="margin-bottom:14px;">
+        <div class="fw-cell fw-cell-a">
+          <div class="fw-label">A — Assign</div>
+          <p>Maternal nutrition advisor fluent in local dietary context and Swahili-inflected English</p>
+        </div>
+        <div class="fw-cell fw-cell-i">
+          <div class="fw-label">I — Instruct</div>
+          <p>Recommend 3 iron/folate-rich local foods for a second-trimester woman on KES 100/day, no refrigeration</p>
+        </div>
+        <div class="fw-cell fw-cell-m">
+          <div class="fw-label">M — Moderate</div>
+          <p>No unavailable foods, no jargon, max 150 words, end with one practical local meal idea</p>
+        </div>
+      </div>
+
+      <p style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber-dark);margin-bottom:8px;">MAP Annotations</p>
+      <div class="framework-grid cols-3" style="margin-bottom:14px;">
+        <div class="fw-cell fw-cell-map-m">
+          <div class="fw-label">M — Message</div>
+          <p>Trimester-specific, budget-anchored nutrition advice using local staples only</p>
+        </div>
+        <div class="fw-cell fw-cell-map-a">
+          <div class="fw-label">A — Audience</div>
+          <p>Rural pregnant woman, low-income, no refrigeration, Kakamega County</p>
+        </div>
+        <div class="fw-cell fw-cell-map-p">
+          <div class="fw-label">P — Purpose</div>
+          <p>Increase safe nutrient intake using accessible, affordable local foods</p>
+        </div>
+      </div>
+
+      <div class="improvement">
+        <strong>Key Improvement:</strong> Eliminates hallucination of unavailable foods by constraining the AI's food vocabulary to the local ecosystem — directly addressing AfyaTech's documented Kakamega failure where kale was recommended in a county where it is not sold.
+      </div>
+    </div>
+  </div>
+
+  <!-- PROMPT B -->
+  <div class="prompt-card">
+    <div class="card-header">
+      <span class="card-label">Prompt B — Clinic Scheduling</span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="pill pill-original">Original</span>
+        <span class="pill pill-aim">AIM</span>
+        <span class="pill pill-map">MAP</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="original-prompt">"When should I go to the clinic?"</div>
+      <div class="rewritten-prompt">
+        You are a community health scheduling assistant for rural Western Kenya. You know that 70% of users live more than 5 km from the nearest facility and rely on CHWs who visit on fixed days, typically Tuesday and Friday. A woman is 28 weeks pregnant and has missed her last two ANC visits. Transport costs KES 80 per trip. Based on her gestational age, CHW visit days, and transport costs, help her plan her next clinic visit. Include the best day to go, what documents to bring, and whether to wait for the CHW or travel directly. Do not suggest a specialist hospital unless the CHW recommends it. Output as a 3-step action plan only.
+      <
