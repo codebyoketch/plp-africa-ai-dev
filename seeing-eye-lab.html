@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seeing Eye Lab — Market Queue Challenge</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --terra: #B5451B;
+    --terra-dark: #7A2D0E;
+    --terra-light: #FAEDE7;
+    --terra-mid: #E0825A;
+    --indigo: #2C3E7A;
+    --indigo-dark: #1A2550;
+    --indigo-light: #EAF0FF;
+    --indigo-mid: #7B93D4;
+    --ochre: #C48B0A;
+    --ochre-light: #FEF5DC;
+    --ochre-mid: #E8B93A;
+    --sage: #3A6B4A;
+    --sage-light: #E8F4ED;
+    --sage-mid: #7BBD91;
+    --cream: #F7F2E8;
+    --cream-dark: #EAE3D0;
+    --ink: #1E1A14;
+    --ink-light: #5C5346;
+    --white: #FDFAF5;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse at 5% 15%, rgba(181,69,27,0.07) 0%, transparent 45%),
+      radial-gradient(ellipse at 95% 85%, rgba(44,62,122,0.07) 0%, transparent 45%),
+      radial-gradient(ellipse at 50% 50%, rgba(196,139,10,0.04) 0%, transparent 35%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── MASTHEAD ── */
+  .masthead {
+    background: var(--indigo-dark);
+    border-radius: 16px;
+    padding: 0;
+    margin-bottom: 2rem;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(26,37,80,0.25);
+    display: grid;
+    grid-template-columns: 1fr auto;
+  }
+
+  .masthead-content {
+    padding: 2.25rem 2.25rem 1.75rem;
+    position: relative;
+  }
+
+  .masthead-content::before {
+    content: '';
+    position: absolute;
+    top: -30px; left: -30px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,139,10,0.2) 0%, transparent 70%);
+  }
+
+  .masthead-stripe {
+    width: 8px;
+    background: repeating-linear-gradient(
+      180deg,
+      var(--terra) 0px,
+      var(--terra) 20px,
+      var(--ochre-mid) 20px,
+      var(--ochre-mid) 40px,
+      var(--sage-mid) 40px,
+      var(--sage-mid) 60px
+    );
+  }
+
+  .masthead-eyebrow {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ochre-mid);
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .masthead h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.15;
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .masthead-sub {
+    font-size: 13px;
+    color: rgba(253,250,245,0.6);
+    font-style: italic;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 18px;
+  }
+
+  .masthead-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tag {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 3px;
+    border: 1px solid rgba(123,147,212,0.4);
+    color: var(--indigo-mid);
+    background: rgba(123,147,212,0.1);
+  }
+
+  /* ── CONTEXT BOX ── */
+  .context-box {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+    border-left: 4px solid var(--terra);
+    box-shadow: 0 2px 12px rgba(30,26,20,0.07);
+    font-size: 13px;
+    color: var(--ink-light);
+    line-height: 1.75;
+  }
+
+  .context-box strong { color: var(--terra-dark); font-weight: 600; }
+
+  .context-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .stat-cell {
+    background: var(--cream);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+    border: 1px solid var(--cream-dark);
+  }
+
+  .stat-number {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--terra);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label { font-size: 10px; color: var(--ink-light); line-height: 1.4; }
+
+  /* ── SECTION HEADERS ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 2.5rem 0 1rem;
+  }
+
+  .section-badge {
+    background: var(--terra);
+    color: var(--white);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .section-badge.indigo { background: var(--indigo); }
+  .section-badge.sage { background: var(--sage); }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  .section-divider {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--terra-mid), transparent);
+    opacity: 0.35;
+  }
+
+  /* ── PART CARDS ── */
+  .part-card {
+    background: var(--white);
+    border-radius: 14px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(30,26,20,0.07);
+    border: 1px solid var(--cream-dark);
+  }
+
+  .part-header {
+    padding: 11px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .part-header.terra { background: var(--terra-light); border-bottom: 1px solid #F5D4C8; }
+  .part-header.indigo { background: var(--indigo-light); border-bottom: 1px solid #C8D5F0; }
+  .part-header.sage { background: var(--sage-light); border-bottom: 1px solid #C5DDD0; }
+  .part-header.ochre { background: var(--ochre-light); border-bottom: 1px solid #F0DFA0; }
+
+  .part-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .part-header.terra .part-label { color: var(--terra-dark); }
+  .part-header.indigo .part-label { color: var(--indigo-dark); }
+  .part-header.sage .part-label { color: var(--sage); }
+  .part-header.ochre .part-label { color: var(--ochre); }
+
+  .module-tag {
+    font-size: 9px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .mt-terra { background: var(--terra-light); color: var(--terra); border: 1px solid var(--terra-mid); }
+  .mt-indigo { background: var(--indigo-light); color: var(--indigo); border: 1px solid var(--indigo-mid); }
+  .mt-sage { background: var(--sage-light); color: var(--sage); border: 1px solid var(--sage-mid); }
+  .mt-ochre { background: var(--ochre-light); color: var(--ochre); border: 1px solid var(--ochre-mid); }
+
+  .part-body { padding: 16px 18px; }
+
+  /* ── Q&A ROWS ── */
+  .qa-row {
+    border-bottom: 1px solid var(--cream-dark);
+    padding: 12px 0;
+  }
+
+  .qa-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .qa-row:first-child { padding-top: 0; }
+
+  .qa-q {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--terra);
+    margin-bottom: 6px;
+  }
+
+  .qa-a {
+    font-size: 13px;
+    color: var(--ink-light);
+    line-height: 1.7;
+  }
+
+  .qa-a strong { color: var(--ink); font-weight: 600; }
+
+  .affected-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .affected-cell {
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+
+  .affected-cell:nth-child(1) { background: var(--terra-light); border: 1px solid #F5D4C8; }
+  .affected-cell:nth-child(2) { background: var(--indigo-light); border: 1px solid #C8D5F0; }
+  .affected-cell:nth-child(3) { background: var(--ochre-light); border: 1px solid #F0DFA0; }
+
+  .affected-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .affected-cell:nth-child(1) .affected-label { color: var(--terra); }
+  .affected-cell:nth-child(2) .affected-label { color: var(--indigo); }
+  .affected-cell:nth-child(3) .affected-label { color: var(--ochre); }
+
+  .affected-cell p { font-size: 11.5px; color: var(--ink-light); line-height: 1.5; }
+
+  /* ── ONION DIAGRAM ── */
+  .onion {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 12px 0;
+    position: relative;
+  }
+
+  .onion::before {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: 22px;
+    bottom: 22px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--terra-mid), var(--indigo-mid));
+    opacity: 0.4;
+  }
+
+  .onion-layer {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .onion-layer:nth-child(1) { background: var(--terra-light); border: 1px solid #F5D4C8; }
+  .onion-layer:nth-child(2) { background: #FFF4E0; border: 1px solid #F5DFA0; margin-left: 0px; }
+  .onion-layer:nth-child(3) { background: var(--indigo-light); border: 1px solid #C8D5F0; margin-left: 0px; }
+  .onion-layer:nth-child(4) { background: var(--sage-light); border: 1px solid #C5DDD0; margin-left: 0px; }
+
+  .onion-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .onion-layer:nth-child(1) .onion-num { background: var(--terra); color: var(--white); }
+  .onion-layer:nth-child(2) .onion-num { background: var(--ochre); color: var(--white); }
+  .onion-layer:nth-child(3) .onion-num { background: var(--indigo); color: var(--white); }
+  .onion-layer:nth-child(4) .onion-num { background: var(--sage); color: var(--white); }
+
+  .onion-content {}
+  .onion-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 3px;
+  }
+
+  .onion-layer:nth-child(1) .onion-label { color: var(--terra); }
+  .onion-layer:nth-child(2) .onion-label { color: var(--ochre); }
+  .onion-layer:nth-child(3) .onion-label { color: var(--indigo); }
+  .onion-layer:nth-child(4) .onion-label { color: var(--sage); }
+
+  .onion-text { font-size: 12.5px; color: var(--ink-light); line-height: 1.55; }
+
+  /* ── DATA TABLE ── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 12px 0;
+  }
+
+  .data-table thead th {
+    background: var(--indigo-dark);
+    color: var(--indigo-mid);
+    padding: 9px 12px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .data-table tbody td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--cream-dark);
+    color: var(--ink-light);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  .data-table tbody tr:last-child td { border-bottom: none; }
+  .data-table tbody tr:nth-child(even) td { background: var(--cream); }
+  .data-table tbody td:first-child { font-weight: 500; color: var(--ink); }
+  .data-table tbody td:last-child { color: #999; font-style: italic; }
+
+  /* ── ALGORITHM ── */
+  .algo-block {
+    background: var(--ink);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin: 12px 0;
+    font-family: 'IBM Plex Sans', monospace;
+    font-size: 12.5px;
+    line-height: 1.8;
+    color: #C8D5B8;
+  }
+
+  .algo-keyword { color: var(--ochre-mid); font-weight: 600; }
+  .algo-trigger { color: var(--terra-mid); }
+  .algo-action { color: #9BC4E8; }
+  .algo-comment { color: #6B7060; font-style: italic; }
+  .algo-end { color: var(--sage-mid); font-weight: 600; }
+
+  /* ── EDGE CASES ── */
+  .edge-cases {
+    display: grid;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .edge-case {
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .edge-case:nth-child(1) { background: var(--terra-light); border: 1px solid #F5D4C8; }
+  .edge-case:nth-child(2) { background: var(--indigo-light); border: 1px solid #C8D5F0; }
+  .edge-case:nth-child(3) { background: var(--ochre-light); border: 1px solid #F0DFA0; }
+
+  .edge-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+  .edge-content {}
+  .edge-title {
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+
+  .edge-case:nth-child(1) .edge-title { color: var(--terra-dark); }
+  .edge-case:nth-child(2) .edge-title { color: var(--indigo-dark); }
+  .edge-case:nth-child(3) .edge-title { color: var(--ochre); }
+
+  .edge-text { font-size: 12px; color: var(--ink-light); line-height: 1.55; }
+  .edge-text strong { color: var(--ink); font-weight: 600; }
+
+  /* ── REFLECTION QUESTIONS ── */
+  .reflection-q {
+    border-bottom: 1px solid var(--cream-dark);
+    padding: 13px 0;
+  }
+
+  .reflection-q:first-child { padding-top: 0; }
+  .reflection-q:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .refl-q-text {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--indigo);
+    margin-bottom: 6px;
+  }
+
+  .refl-a-text {
+    font-size: 13px;
+    color: var(--ink-light);
+    line-height: 1.7;
+  }
+
+  /* ── CHECKLIST ── */
+  .checklist {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12.5px;
+    color: var(--ink-light);
+    line-height: 1.5;
+  }
+
+  .check-icon {
+    width: 20px;
+    height: 20px;
+    background: var(--sage);
+    border-radius: 50%;
+    color: var(--white);
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── EXTENSION ── */
+  .extension {
+    background: linear-gradient(135deg, var(--indigo-dark) 0%, #1E3A5C 60%, #1A3020 100%);
+    border-radius: 14px;
+    padding: 1.5rem 1.75rem;
+    margin-top: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(26,37,80,0.2);
+  }
+
+  .extension::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,185,58,0.15) 0%, transparent 70%);
+  }
+
+  .extension h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    color: var(--ochre-mid);
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .extension p {
+    font-size: 13px;
+    color: rgba(253,250,245,0.8);
+    line-height: 1.75;
+    position: relative;
+    z-index: 1;
+  }
+
+  .extension p + p { margin-top: 8px; }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    margin-top: 2.5rem;
+    font-size: 11px;
+    color: var(--ink-light);
+    letter-spacing: 0.06em;
+    opacity: 0.6;
+  }
+
+  @media (max-width: 600px) {
+    .masthead { grid-template-columns: 1fr; }
+    .masthead-stripe { height: 6px; width: 100%; background: repeating-linear-gradient(90deg, var(--terra) 0px, var(--terra) 33%, var(--ochre-mid) 33%, var(--ochre-mid) 66%, var(--sage-mid) 66%, var(--sage-mid) 100%); }
+    .context-stats { grid-template-columns: 1fr; }
+    .affected-grid { grid-template-columns: 1fr; }
+    .data-table { font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="masthead-content">
+      <div class="masthead-eyebrow">PLP Africa · AI for Development · Cluster 1</div>
+      <h1>Seeing Eye Lab<br><em style="font-weight:400;font-size:0.75em;opacity:0.8;">The Market Queue Challenge</em></h1>
+      <div class="masthead-sub">Modules 1–3 · Computational Thinking · 75 minutes</div>
+      <div class="masthead-tags">
+        <span class="tag">Problem Solving</span>
+        <span class="tag">Decomposition</span>
+        <span class="tag">Abstraction</span>
+        <span class="tag">Algorithms</span>
+        <span class="tag">Pseudocode</span>
+      </div>
+    </div>
+    <div class="masthead-stripe"></div>
+  </div>
+
+  <!-- CONTEXT -->
+  <div class="context-box">
+    <strong>Lab Context:</strong> In markets across Africa — from Oshodi in Lagos to Makola in Accra — women spend 2 to 3 hours daily waiting in queues to buy essentials such as garri, tomatoes, and cooking oil. This mission uses computational thinking to transform this chaotic problem into a solvable system <em>before writing a single line of code.</em>
+    <div class="context-stats">
+      <div class="stat-cell">
+        <div class="stat-number">2–3h</div>
+        <div class="stat-label">Daily queue time per market woman</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-number">3</div>
+        <div class="stat-label">Stakeholder groups affected by queue chaos</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-number">20%</div>
+        <div class="stat-label">Target waiting time reduction goal</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PART 1 -->
+  <div class="section-header">
+    <div class="section-badge">Part 1</div>
+    <div class="section-title">SEE Clearly</div>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="part-card">
+    <div class="part-header terra">
+      <span class="part-label">Module 1 — Problem Solving & Computational Thinking</span>
+      <span class="module-tag mt-terra">20 mins</span>
+    </div>
+    <div class="part-body">
+
+      <div class="qa-row">
+        <div class="qa-q">What is the real problem?</div>
+        <div class="qa-a">
+          Market women lose 2 to 3 hours daily waiting in vendor queues because <strong>there is no system to signal when popular items will be restocked</strong>. This forces buyers to arrive early and wait blindly rather than time their arrival to actual supply. The problem is not that queues exist — it is that no information flows between the people who control supply and the people who need it.
+        </div>
+      </div>
+
+      <div class="qa-row">
+        <div class="qa-q">Who is affected? (3 groups)</div>
+        <div class="qa-a">
+          <div class="affected-grid">
+            <div class="affected-cell">
+              <div class="affected-label">Market Women</div>
+              <p>Lose income-generating time and suffer physical exhaustion waiting in sun or rain. Time in queues cannot be used for trading, childcare, or other productive activity.</p>
+            </div>
+            <div class="affected-cell">
+              <div class="affected-label">Children</div>
+              <p>Left unsupervised at home or brought into crowded, unsafe environments. Younger children face health risks; older children may miss school.</p>
+            </div>
+            <div class="affected-cell">
+              <div class="affected-label">Vendors</div>
+              <p>Face chaotic customer surges the moment stock arrives, making it difficult to serve customers efficiently, maintain order, or plan staffing.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa-row">
+        <div class="qa-q">One assumption engineers might make that is WRONG</div>
+        <div class="qa-a">
+          That buyers have smartphones and reliable mobile data, so an app-based notification system will solve the problem. In reality, most market women in Oshodi or Makola use <strong>basic feature phones</strong>, have inconsistent airtime, and cannot afford mobile data bundles. Any solution must function via SMS or physical signals — not apps — to be genuinely inclusive.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PART 2 -->
+  <div class="section-header">
+    <div class="section-badge indigo">Part 2</div>
+    <div class="section-title">BREAK It Down</div>
+    <div class="section-divider"></div>
+  </div>
+
+  <di
